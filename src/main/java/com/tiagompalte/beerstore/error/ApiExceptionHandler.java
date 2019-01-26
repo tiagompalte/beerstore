@@ -1,6 +1,8 @@
 package com.tiagompalte.beerstore.error;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.tiagompalte.beerstore.service.exception.BusinessException;
+import com.tiagompalte.beerstore.service.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +49,19 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException exception, Locale locale) {
 
-        final String errorCode = "generic-1";
+        final String errorCode = "generic-invalid-value";
         final HttpStatus status = HttpStatus.BAD_REQUEST;
         final ErrorResponse errorResponse = ErrorResponse.of(status, toApiError(errorCode, locale, exception.getValue()));
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException exception, Locale locale) {
+
+        final String errorCode = exception.getCode();
+        final HttpStatus status = exception.getStatus();
+        final String entity = exception.getEntity();
+        final ErrorResponse errorResponse = ErrorResponse.of(status, toApiError(errorCode, locale, entity));
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

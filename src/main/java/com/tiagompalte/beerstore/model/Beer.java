@@ -1,5 +1,6 @@
 package com.tiagompalte.beerstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -24,9 +25,15 @@ public class Beer {
     private String name;
 
     @NotNull(message = "beers-2")
+    //@Enumerated(EnumType.STRING)
     private BeerType type;
 
     @NotNull(message = "beers-3")
     @DecimalMin(value = "0", message = "beers-4")
     private BigDecimal volume;
+
+    @JsonIgnore
+    public boolean isNew() {
+        return id == null;
+    }
 }
